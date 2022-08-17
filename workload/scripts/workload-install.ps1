@@ -50,7 +50,19 @@ function Ensure-Directory([string]$TestDir) {
         Remove-Item -Path $(Join-Path -Path $TestDir -ChildPath ".test-write-access") -Force
     }
     Catch [System.UnauthorizedAccessException] {
-        Write-Error "No permission to install. Try run with administrator mode."
+
+        Write-Host "No permission to install. Try run with administrator mode."
+        $BasePath = Invoke-Expression "& pwd"
+        $Result = start-process  PowerShell -verb runas -ArgumentList " -ExecutionPolicy unrestricted -file $BasePath\workload-install.ps1 " -Wait -PassThru
+        Write-Host "@@@@@@@ Passed ExitCode[$($Result.ExitCode)]"
+        if ($Result.ExitCode -eq 0) {
+
+            Write-Host "@@@@@@@ Install Success."
+            exit 0
+        }
+        else {
+            Write-Error "@@@@@@@ Install Fail."
+        }
     }
 }
 
