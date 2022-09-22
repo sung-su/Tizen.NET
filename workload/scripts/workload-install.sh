@@ -199,6 +199,11 @@ function install_tizenworkload() {
     dotnet new globaljson --sdk-version $DOTNET_VERSION
     $DOTNET_INSTALL_DIR/dotnet workload install tizen --skip-manifest-update
 
+    MAUI_TIZEN=$($DOTNET_INSTALL_DIR/dotnet workload list | grep maui-tizen)
+    if [ -z "$MAUI_TIZEN" ]; then
+        dotnet workload install maui-tizen
+    fi
+
     # Clean-up
     rm -fr $TMPDIR
     rm global.json
